@@ -107,9 +107,29 @@ th, td {
 }
 th { background:#222; }
 td { background:#161b22; }
+
+#fullscreenBtn {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 9999;
+
+    background: rgba(0,0,0,0.6);
+    border-radius: 8px;
+    padding: 6px 10px;
+    user-select: none;
+}
+#fullscreenBtn:hover {
+    background: rgba(255,255,255,0.15);
+}
+
 </style>
 </head>
 <body>
+
+<div id="fullscreenBtn" onclick="toggleFullscreen()">⛶</div>
 
 <div class="top-container">
     <div class="left-panel">
@@ -321,6 +341,13 @@ function renderInningsTable(){
 }
 
 
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
+}
 function resetGame(){
     if(!confirm("Reset game?")) return;
     state={
