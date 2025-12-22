@@ -3,111 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Straight Pool 14.1 Scoreboard</title>
+<title>Billiard Scoreboards</title>
 <style>
 :root {
     --bg:#0e1117;
     --panel:#161b22;
     --blue:#4da3ff;
     --red:#ff4d4d;
+    --yellow:#ffd84d;
     --btn:#222;
     --btn-hover:#333;
     --table-bg:#1a1f28;
+    color:white;
 }
 body {
     margin:0;
     background:var(--bg);
     color:white;
     font-family:Arial, sans-serif;
+    height:100vh;
     display:flex;
     flex-direction:column;
-    min-height:100vh;
 }
-.top-container {
+
+/* SWITCHER */
+.switcher {
     display:flex;
-    gap:20px;
-    padding:20px;
-    flex:1;
-}
-.left-panel {
-    flex:2;
-    display:flex;
-    flex-direction:column;
-    gap:20px;
-}
-.right-panel {
-    flex:1;
-    max-width:350px;
-    overflow-x:auto;
-}
-.scoreboard {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
-}
-.player {
-    background:var(--panel);
-    border-radius:16px;
-    padding:20px;
-    display:flex;
-    flex-direction:column;
-    cursor:pointer;
-}
-.player.active { outline:4px solid white; }
-.score {
-    flex:1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:clamp(120px, 20vw, 420px);
-    font-weight:bold;
-}
-.p1 { color:var(--blue); }
-.p2 { color:var(--red); }
-.info { text-align:center; font-size:18px; opacity:0.9; }
-.panel {
-    background:var(--panel);
-    padding:16px;
-    border-radius:12px;
-}
-.grid {
-    display:grid;
-    grid-template-columns:repeat(5, 1fr);
     gap:10px;
+    padding:10px 20px;
+    background:var(--panel);
 }
-button {
+.switcher button {
+    padding:8px 14px;
+    cursor:pointer;
+    border:none;
+    border-radius:8px;
     background:var(--btn);
     color:white;
-    border:none;
-    border-radius:10px;
-    padding:14px 0;
-    font-size:20px;
-    cursor:pointer;
 }
-button:hover { background:var(--btn-hover); }
-.bottom {
-    display:flex;
-    justify-content:center;
-    gap:12px;
-    flex-wrap:wrap;
-    padding:10px;
-    background:#000;
-}
-table {
-    width:100%;
-    border-collapse:collapse;
-    background:var(--table-bg);
-    border-radius:10px;
-    overflow:hidden;
-}
-th, td {
-    padding:8px;
-    text-align:center;
-    border-bottom:1px solid #333;
-}
-th { background:#222; }
-td { background:#161b22; }
+.switcher button.active { outline:2px solid white; }
 
+/* FULLSCREEN BUTTON */
 #fullscreenBtn {
     position: fixed;
     top: 12px;
@@ -115,255 +51,299 @@ td { background:#161b22; }
     font-size: 28px;
     cursor: pointer;
     z-index: 9999;
-
     background: rgba(0,0,0,0.6);
     border-radius: 8px;
     padding: 6px 10px;
     user-select: none;
 }
-#fullscreenBtn:hover {
-    background: rgba(255,255,255,0.15);
-}
+#fullscreenBtn:hover { background: rgba(255,255,255,0.15); }
 
+/* Container for boards */
+#bsContainer > div { display:none; flex:1; flex-direction:column; }
+#bsContainer > div.active { display:flex; }
+
+/* ---------------- BS SIMPLE ---------------- */
+#bs .scoreboard {
+    flex:1;
+    display:grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap:20px;
+    padding:20px;
+}
+#bs .player {
+    background: var(--panel);
+    border-radius:16px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:20px;
+}
+#bs .score { text-align:center; font-size:18vw; font-weight:bold; flex:1; display:flex; align-items:center; justify-content:center; }
+#bs .p1 { color: var(--blue); }
+#bs .p2 { color: var(--red); }
+#bs .p3 { color: var(--yellow); }
+#bs .buttons { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+#bs button { font-size:5vw; padding:20px 0; background:var(--btn); color:white; border:none; border-radius:14px; cursor:pointer; }
+#bs button:hover { background:var(--btn-hover); }
+#bs .controls { display:flex; justify-content:center; gap:20px; padding:12px; background:#000; }
+#bs .controls button { font-size:22px; padding:10px 20px; }
+
+/* ---------------- BS 14.1 ---------------- */
+#bs14 .top-container { display:flex; gap:20px; padding:20px; flex:1; }
+#bs14 .left-panel { flex:2; display:flex; flex-direction:column; gap:20px; }
+#bs14 .right-panel { flex:1; max-width:350px; overflow-x:auto; }
+#bs14 .scoreboard { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+#bs14 .player { background:var(--panel); border-radius:16px; padding:20px; display:flex; flex-direction:column; cursor:pointer; }
+#bs14 .player.active { outline:4px solid white; }
+#bs14 .score { flex:1; display:flex; align-items:center; justify-content:center; font-size:clamp(120px,20vw,420px); font-weight:bold; }
+#bs14 .p1 { color:var(--blue); }
+#bs14 .p2 { color:var(--red); }
+#bs14 .info { text-align:center; font-size:18px; opacity:0.9; }
+#bs14 .panel { background:var(--panel); padding:16px; border-radius:12px; }
+#bs14 .grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+#bs14 button { background:var(--btn); color:white; border:none; border-radius:10px; padding:14px 0; font-size:20px; cursor:pointer; }
+#bs14 button:hover { background:var(--btn-hover); }
+#bs14 .bottom { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; padding:10px; background:#000; }
+#bs14 table { width:100%; border-collapse:collapse; background:var(--table-bg); border-radius:10px; overflow:hidden; }
+#bs14 th, #bs14 td { padding:8px; text-align:center; border-bottom:1px solid #333; }
+#bs14 th { background:#222; }
+#bs14 td { background:#161b22; }
 </style>
 </head>
 <body>
 
+<div class="switcher">
+    <button id="btnBS" class="active" onclick="switchBoard('bs')">BS (Simple)</button>
+    <button id="btnBS14" onclick="switchBoard('bs14')">BS 14.1</button>
+</div>
+
 <div id="fullscreenBtn" onclick="toggleFullscreen()">⛶</div>
 
-<div class="top-container">
-    <div class="left-panel">
+<div id="bsContainer">
+    <!-- BS Simple -->
+    <div id="bs" class="active">
         <div class="scoreboard">
-            <div class="player active" id="p1" onclick="switchPlayer(0)">
-                <div class="score p1" id="score1">0</div>
-                <div class="info" id="foul1">Fouls: 0</div>
-                <div class="info" id="run1">Run: 0</div>
+            <div class="player">
+                <div class="score p1" id="s1_1">0</div>
+                <div class="buttons">
+                    <button onclick="addScore(1, 'bs')">+</button>
+                    <button onclick="subtractScore(1, 'bs')">−</button>
+                </div>
             </div>
-
-            <div class="player" id="p2" onclick="switchPlayer(1)">
-                <div class="score p2" id="score2">0</div>
-                <div class="info" id="foul2">Fouls: 0</div>
-                <div class="info" id="run2">Run: 0</div>
+            <div class="player">
+                <div class="score p2" id="s2_1">0</div>
+                <div class="buttons">
+                    <button onclick="addScore(2, 'bs')">+</button>
+                    <button onclick="subtractScore(2, 'bs')">−</button>
+                </div>
+            </div>
+            <div class="player" id="p3_1" style="display:none">
+                <div class="score p3" id="s3_1">0</div>
+                <div class="buttons">
+                    <button onclick="addScore(3, 'bs')">+</button>
+                    <button onclick="subtractScore(3, 'bs')">−</button>
+                </div>
             </div>
         </div>
-
-        <div class="panel">
-            <div class="info" style="margin-bottom:10px">Balls left after shot</div>
-            <div class="grid" id="buttons"></div>
+        <div class="controls">
+            <button onclick="resetScores('bs')">Reset</button>
+            <button onclick="togglePlayer3('bs')">3</button>
         </div>
-
-        <div class="bottom">
-            <div class="info">Balls before shot: <strong id="ballsLeft">15</strong></div>
-            <button onclick="undo()">Undo</button>
-            <button onclick="resetGame()">Reset</button>
-            <button onclick="foul()">Foul</button>
-        </div>
+        <audio id="scoreSoundBS" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
     </div>
 
-    <div class="right-panel">
-        <table>
-            <thead>
-                <tr>
-                    <th>P1 Inning</th>
-                    <th>P1 Sum</th>
-                    <th>P2 Inning</th>
-                    <th>P2 Sum</th>
-                    <th>Balls Left</th>
-                </tr>
-            </thead>
-            <tbody id="inningsTable"></tbody>
-        </table>
+    <!-- BS 14.1 -->
+    <div id="bs14">
+        <div class="top-container">
+            <div class="left-panel">
+                <div class="scoreboard">
+                    <div class="player active" id="p1" onclick="switchPlayer(0)">
+                        <div class="score p1" id="score1">0</div>
+                        <div class="info" id="foul1">Fouls: 0</div>
+                        <div class="info" id="run1">Run: 0</div>
+                    </div>
+                    <div class="player" id="p2" onclick="switchPlayer(1)">
+                        <div class="score p2" id="score2">0</div>
+                        <div class="info" id="foul2">Fouls: 0</div>
+                        <div class="info" id="run2">Run: 0</div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="info" style="margin-bottom:10px">Balls left after shot</div>
+                    <div class="grid" id="buttons"></div>
+                </div>
+                <div class="bottom">
+                    <div class="info">Balls before shot: <strong id="ballsLeft">15</strong></div>
+                    <button onclick="undo()">Undo</button>
+                    <button onclick="resetGame()">Reset</button>
+                    <button onclick="foul()">Foul</button>
+                </div>
+            </div>
+            <div class="right-panel">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>P1 Inning</th>
+                            <th>P1 Sum</th>
+                            <th>P2 Inning</th>
+                            <th>P2 Sum</th>
+                            <th>Balls Left</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inningsTable"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
+// --- BOARD SWITCHING ---
+function switchBoard(boardId) {
+    document.querySelectorAll('#bsContainer > div').forEach(d => d.classList.remove('active'));
+    document.getElementById(boardId).classList.add('active');
+    document.querySelectorAll('.switcher button').forEach(b => b.classList.remove('active'));
+    document.getElementById('btn' + boardId.toUpperCase()).classList.add('active');
+    // Reset boards when switching
+    if(boardId==='bs') resetScores('bs');
+    if(boardId==='bs14') resetGame();
+}
+
+// --- BS SIMPLE FUNCTIONS ---
+function addScore(p, board) {
+    const el = document.getElementById(`s${p}_1`);
+    el.textContent = parseInt(el.textContent) + 1;
+    playScoreSound('bs');
+}
+function subtractScore(p, board) {
+    const el = document.getElementById(`s${p}_1`);
+    const v = parseInt(el.textContent);
+    if(v>0) el.textContent = v-1;
+}
+function resetScores(board) {
+    [1,2,3].forEach(p=>{
+        const el = document.getElementById(`s${p}_1`);
+        if(el) el.textContent='0';
+    });
+}
+function togglePlayer3(board) {
+    const p3 = document.getElementById('p3_1');
+    p3.style.display = p3.style.display==='none'?'flex':'none';
+}
+function playScoreSound(board) {
+    const sound = document.getElementById('scoreSoundBS');
+    if(sound) { sound.currentTime=0; sound.play(); }
+}
+
+// --- BS 14.1 FUNCTIONS ---
+// Keep your existing BS14 logic unchanged
 let state = {
-    scores: [0,0],
-    ballsOnTable: 15,
-    current: 0,
-    fouls: [0,0],
-    history: [],
-    run: 0,
-    currentInning: [[],[]],
-    completedInnings: []
+    scores:[0,0], ballsOnTable:15, current:0, fouls:[0,0],
+    history:[], run:0, currentInning:[[],[]], completedInnings:[]
 };
 
 function snapshot() {
     const snapshot = {
-        scores: [...state.scores],
-        ballsOnTable: state.ballsOnTable,
-        current: state.current,
-        fouls: [...state.fouls],
-        run: state.run,
-        currentInning: [ [...state.currentInning[0]], [...state.currentInning[1]] ]
+        scores:[...state.scores], ballsOnTable:state.ballsOnTable,
+        current:state.current, fouls:[...state.fouls], run:state.run,
+        currentInning:[[...state.currentInning[0]],[...state.currentInning[1]]]
     };
     state.history.push(snapshot);
-    if(state.history.length > 50) state.history.shift();
+    if(state.history.length>50) state.history.shift();
 }
-
 function undo() {
     if(!state.history.length) return;
-    const prev = state.history.pop();
-    state.scores = prev.scores;
-    state.ballsOnTable = prev.ballsOnTable;
-    state.current = prev.current;
-    state.fouls = prev.fouls;
-    state.run = prev.run;
-    state.currentInning = prev.currentInning;
+    const prev=state.history.pop();
+    state.scores=prev.scores; state.ballsOnTable=prev.ballsOnTable;
+    state.current=prev.current; state.fouls=prev.fouls;
+    state.run=prev.run; state.currentInning=prev.currentInning;
     render();
 }
-
 function render() {
-    score1.textContent = state.scores[0];
-    score2.textContent = state.scores[1];
-    ballsLeft.textContent = state.ballsOnTable;
-    document.getElementById('foul1').textContent = 'Fouls: ' + state.fouls[0];
-    document.getElementById('foul2').textContent = 'Fouls: ' + state.fouls[1];
-    document.getElementById('run1').textContent = 'Run: ' + (state.current===0?state.run:0);
-    document.getElementById('run2').textContent = 'Run: ' + (state.current===1?state.run:0);
-
-    p1.classList.toggle("active", state.current===0);
-    p2.classList.toggle("active", state.current===1);
-
-    renderButtons();
-    renderInningsTable();
+    score1.textContent=state.scores[0]; score2.textContent=state.scores[1];
+    ballsLeft.textContent=state.ballsOnTable;
+    document.getElementById('foul1').textContent='Fouls: '+state.fouls[0];
+    document.getElementById('foul2').textContent='Fouls: '+state.fouls[1];
+    document.getElementById('run1').textContent='Run: '+(state.current===0?state.run:0);
+    document.getElementById('run2').textContent='Run: '+(state.current===1?state.run:0);
+    p1.classList.toggle("active",state.current===0);
+    p2.classList.toggle("active",state.current===1);
+    renderButtons(); renderInningsTable();
 }
-
 function renderButtons() {
-    const container = document.getElementById("buttons");
-    container.innerHTML = "";
-    const max = Math.min(15,state.ballsOnTable);
+    const container=document.getElementById("buttons");
+    container.innerHTML='';
+    const max=Math.min(15,state.ballsOnTable);
     for(let i=1;i<=max;i++){
-        const b = document.createElement("button");
-        b.textContent = i;
-        b.onclick = ()=>handleSelection(i);
+        const b=document.createElement("button");
+        b.textContent=i;
+        b.onclick=()=>handleSelection(i);
         container.appendChild(b);
     }
 }
-
 function handleSelection(selected){
     snapshot();
-    const p = state.current;
+    const p=state.current;
     state.fouls[p]=0;
     let points=0;
-
     if(selected===1){
-        points = state.ballsOnTable-1;
-        state.run+=points;
-        state.ballsOnTable=15;
+        points=state.ballsOnTable-1; state.run+=points; state.ballsOnTable=15;
         flashRack(p);
         state.currentInning[p].push(points);
-        state.scores[p]+=points;
-        render();
-        return;
+        state.scores[p]+=points; render(); return;
     }
-
-    points = state.ballsOnTable - selected;
-    state.ballsOnTable = selected;
-    state.run = 0;
-
-    state.currentInning[p].push(points);
-    state.scores[p]+=points;
-
-    // finalize inning if points scored
+    points=state.ballsOnTable-selected; state.ballsOnTable=selected; state.run=0;
+    state.currentInning[p].push(points); state.scores[p]+=points;
     if(points>0) finalizeInning();
-
-    // switch player
-    state.current = 1-p;
-
+    state.current=1-p;
     render();
 }
-
 function finalizeInning(){
-    const hasPoints = state.currentInning[0].length>0 || state.currentInning[1].length>0;
+    const hasPoints=state.currentInning[0].length>0 || state.currentInning[1].length>0;
     if(!hasPoints) return;
-
-    const row = [
-        state.currentInning[0].slice(), sumArray(state.currentInning[0]),
-        state.currentInning[1].slice(), sumArray(state.currentInning[1]),
-        state.ballsOnTable
-    ];
+    const row=[state.currentInning[0].slice(), sumArray(state.currentInning[0]),
+               state.currentInning[1].slice(), sumArray(state.currentInning[1]),
+               state.ballsOnTable];
     state.completedInnings.push(row);
-    state.currentInning = [[],[]];
+    state.currentInning=[[],[]];
 }
-
 function flashRack(player){
-    const el = player===0?p1:p2;
+    const el=player===0?p1:p2;
     el.style.boxShadow='0 0 40px 10px gold';
     setTimeout(()=>{el.style.boxShadow='';},800);
 }
-
 function switchPlayer(p){
-    snapshot();
-    // only finalize inning if points exist
-    finalizeInning();
-    state.current=p;
-    state.run=0;
-    render();
+    snapshot(); finalizeInning();
+    state.current=p; state.run=0; render();
 }
-
 function foul(){
-    snapshot();
-    const p = state.current;
-    state.fouls[p]++;
-    state.run=0;
-    let points=-1;
-
-    if(state.fouls[p]===3){
-        points=-15;
-        state.fouls[p]=0;
-        state.ballsOnTable=15;
-    } else if(state.ballsOnTable===1){
-        state.ballsOnTable=15;
-    }
-
-    state.scores[p]+=points;
-    state.currentInning[p].push(points);
-    state.current=1-p;
-    finalizeInning();
-    render();
+    snapshot(); const p=state.current; state.fouls[p]++; state.run=0; let points=-1;
+    if(state.fouls[p]===3){ points=-15; state.fouls[p]=0; state.ballsOnTable=15; }
+    else if(state.ballsOnTable===1) state.ballsOnTable=15;
+    state.scores[p]+=points; state.currentInning[p].push(points);
+    state.current=1-p; finalizeInning(); render();
 }
-
-function sumArray(arr){return arr.reduce((a,b)=>a+b,0);}
-
+function sumArray(arr){ return arr.reduce((a,b)=>a+b,0); }
 function renderInningsTable(){
-    const tbody=document.getElementById('inningsTable');
-    tbody.innerHTML='';
+    const tbody=document.getElementById('inningsTable'); tbody.innerHTML='';
     state.completedInnings.forEach(r=>{
         const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${r[0].join('/')}</td>
-                        <td>${r[1]}</td>
-                        <td>${r[2].join('/')}</td>
-                        <td>${r[3]}</td>
-                        <td>${r[4]}</td>`;
+        tr.innerHTML=`<td>${r[0].join('/')}</td><td>${r[1]}</td><td>${r[2].join('/')}</td><td>${r[3]}</td><td>${r[4]}</td>`;
         tbody.appendChild(tr);
     });
 }
-
-
 function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-    } else {
-        document.exitFullscreen();
-    }
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
 }
 function resetGame(){
     if(!confirm("Reset game?")) return;
-    state={
-        scores:[0,0],
-        ballsOnTable:15,
-        current:0,
-        fouls:[0,0],
-        history:[],
-        run:0,
-        currentInning:[[],[]],
-        completedInnings:[]
-    };
+    state={scores:[0,0], ballsOnTable:15, current:0, fouls:[0,0], history:[], run:0, currentInning:[[],[]], completedInnings:[]};
     render();
 }
-
 render();
 </script>
+
 </body>
 </html>
