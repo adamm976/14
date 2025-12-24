@@ -79,7 +79,24 @@ body {
     justify-content:space-between;
     padding:20px;
 }
-#bs .score { text-align:center; font-size:18vw; font-weight:bold; flex:1; display:flex; align-items:center; justify-content:center; }
+#bs .player {
+    cursor: pointer;
+}
+
+#bs .score {
+    pointer-events: none; /* score never eats the click */
+}
+
+#bs .score {
+    text-align:center;
+    font-size:22vw;
+    font-weight:bold;
+    height:100%; /* force container to respect font size */
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
 #bs .p1 { color: var(--blue); }
 #bs .p2 { color: var(--red); }
 #bs .p3 { color: var(--yellow); }
@@ -124,33 +141,35 @@ body {
     <!-- BS Simple -->
     <div id="bs" class="active">
         <div class="scoreboard">
-            <div class="player">
-                <div class="score p1" id="s1_1">0</div>
-                <div class="buttons">
-                    <button onclick="addScore(1, 'bs')">+</button>
-                    <button onclick="subtractScore(1, 'bs')">−</button>
-                </div>
+          <div class="player" onclick="addScore(1, 'bs')">
+            <div class="score p1" id="s1_1">0</div>
+            <div class="buttons">
+              <button onclick="event.stopPropagation(); addScore(1, 'bs')">+</button>
+              <button onclick="event.stopPropagation(); subtractScore(1, 'bs')">−</button>
             </div>
-            <div class="player">
-                <div class="score p2" id="s2_1">0</div>
-                <div class="buttons">
-                    <button onclick="addScore(2, 'bs')">+</button>
-                    <button onclick="subtractScore(2, 'bs')">−</button>
-                </div>
-            </div>
-            <div class="player" id="p3_1" style="display:none">
-                <div class="score p3" id="s3_1">0</div>
-                <div class="buttons">
-                    <button onclick="addScore(3, 'bs')">+</button>
-                    <button onclick="subtractScore(3, 'bs')">−</button>
-                </div>
-            </div>
+          </div>
+
+          <div class="player" onclick="addScore(2, 'bs')">
+              <div class="score p2" id="s2_1">0</div>
+              <div class="buttons">
+                  <button onclick="event.stopPropagation(); addScore(2, 'bs')">+</button>
+                  <button onclick="event.stopPropagation(); subtractScore(2, 'bs')">−</button>
+              </div>
+          </div>
+          <div class="player" id="p3_1" style="display:none" onclick="addScore(3, 'bs')">
+              <div class="score p3" id="s3_1">0</div>
+              <div class="buttons">
+                  <button onclick="event.stopPropagation(); addScore(3, 'bs')">+</button>
+                  <button onclick="event.stopPropagation(); subtractScore(3, 'bs')">−</button>
+              </div>
+          </div>
         </div>
         <div class="controls">
             <button onclick="resetScores('bs')">Reset</button>
             <button onclick="togglePlayer3('bs')">3</button>
         </div>
-        <audio id="scoreSoundBS" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
+        <!-- <audio id="scoreSoundBS" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio> -->
+        <audio id="scoreSoundBS" src="b.mp3" preload="auto"></audio>
     </div>
 
     <!-- BS 14.1 -->
