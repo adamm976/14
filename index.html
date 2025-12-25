@@ -28,20 +28,102 @@ body {
 
 /* SWITCHER */
 .switcher {
+    position:relative;
+    display:flex;
+    align-items:center;
+    padding:12px 20px;
+    background:linear-gradient(180deg,#161b22,#0e1117);
+    border-bottom:1px solid #222;
+}
+.switch-left {
     display:flex;
     gap:10px;
-    padding:10px 20px;
-    background:var(--panel);
+    z-index:2;
 }
+.switch-actions {
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:12px;
+    z-index:1;
+}
+
+.switcher button {
+    appearance:none;
+    border:none;
+    border-radius:12px;
+    padding:10px 18px;
+    font-size:15px;
+    font-weight:600;
+    letter-spacing:.3px;
+    color:#e6edf3;
+    background:linear-gradient(180deg,#21262d,#161b22);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.05),
+        0 4px 12px rgba(0,0,0,.4);
+    cursor:pointer;
+    transition:all .15s ease;
+}
+
+.switcher button:hover {
+    background:linear-gradient(180deg,#2a3038,#1c2128);
+}
+
+.switcher button:active {
+    transform:translateY(1px);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.04),
+        0 2px 6px rgba(0,0,0,.5);
+}
+.switcher button.active {
+    background:linear-gradient(180deg,#3b82f6,#2563eb);
+    color:white;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.2),
+        0 6px 18px rgba(59,130,246,.4);
+}
+
+.switch-left {
+    display:flex;
+    gap:10px;
+}
+
+.switch-actions {
+    display:flex;
+    justify-content:center;
+    gap:12px;
+}
+.switch-actions button {
+    min-width:90px;
+}
+
+@media (max-width:600px) {
+    .switch-actions {
+        gap:8px;
+    }
+}
+
+#actions-bs14 button:nth-child(1) {
+    background:linear-gradient(180deg,#374151,#1f2937);
+}
+#actions-bs14 button:nth-child(3) {
+    background:linear-gradient(180deg,#7f1d1d,#450a0a);
+}
+#actions-bs14 button:nth-child(3):hover {
+    background:linear-gradient(180deg,#991b1b,#5f0f0f);
+}
+#actions-bs button:nth-child(2) {
+    padding:10px 22px;
+    border-radius:999px;
+    background:linear-gradient(180deg,#2d333b,#1c2128);
+}
+
 .switcher button {
     padding:8px 14px;
-    cursor:pointer;
-    border:none;
-    border-radius:8px;
-    background:var(--btn);
-    color:white;
+    font-size:16px;
 }
-.switcher button.active { outline:2px solid white; }
+
 
 /* FULLSCREEN BUTTON */
 #fullscreenBtn {
@@ -63,6 +145,13 @@ body {
 #bsContainer > div.active { display:flex; }
 
 /* ---------------- BS SIMPLE ---------------- */
+.rack-history { display:flex; flex-direction:column; gap:6px; width:100%; padding:0 10px; box-sizing:border-box; }
+.rack-row { display:flex; gap:4px; justify-content:center; flex-wrap:wrap; }
+.rack-circle { width:20px; height:20px; border-radius:50%; background:#333; }
+.rack-circle.p1-won { background:#22c55e; }
+.rack-circle.p2-won { background:#4da3ff; }
+.rack-circle.p3-won { background:#ffd84d; }
+
 #bs .scoreboard {
     flex:1;
     display:grid;
@@ -78,24 +167,14 @@ body {
     flex-direction:column;
     justify-content:space-between;
     padding:20px;
-}
-#bs .player {
     cursor: pointer;
+    touch-action: none;
 }
-
-#bs .player {
-    touch-action: none;   /* critical */
-}
-#bs .player:active {
-    transform: scale(0.98);
-}
+#bs .player:active { transform: scale(0.98); }
 #bs .score {
-    pointer-events: none; /* score never eats the click */
-}
-
-#bs .score {
+    pointer-events: none;
     text-align:center;
-    font-size:28vw; /* bigger */
+    font-size:28vw;
     font-weight:bold;
     height:100%;
     display:flex;
@@ -103,14 +182,10 @@ body {
     justify-content:center;
     user-select:none;
 }
-
-
 #bs .p1 { color: var(--blue); }
 #bs .p2 { color: var(--red); }
 #bs .p3 { color: var(--yellow); }
-/* #bs .buttons { display:grid; grid-template-columns: 1fr 1fr; gap:12px; } */
-#bs .buttons { display:none; }
-
+#bs .buttons { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
 #bs button { font-size:5vw; padding:20px 0; background:var(--btn); color:white; border:none; border-radius:14px; cursor:pointer; }
 #bs button:hover { background:var(--btn-hover); }
 #bs .controls { display:flex; justify-content:center; gap:20px; padding:12px; background:#000; }
@@ -137,33 +212,30 @@ body {
 #bs14 th { background:#222; }
 #bs14 td { background:#161b22; }
 
-#bs14 {
-    flex:1;
-    display:flex;
-    flex-direction:column;
-}
-
-#bs14 .top-container {
-    flex:1;
-    min-height:0;
-}
-
-#bs14 .left-panel,
-#bs14 .right-panel {
-    min-height:0;
-}
-
-#bs14 .right-panel {
-    overflow-y:auto;
-}
-
+#bs14 { flex:1; display:flex; flex-direction:column; }
+#bs14 .top-container { flex:1; min-height:0; }
+#bs14 .left-panel, #bs14 .right-panel { min-height:0; }
+#bs14 .right-panel { overflow-y:auto; }
 </style>
 </head>
 <body>
 
 <div class="switcher">
-    <button id="btnBS" class="active" onclick="switchBoard('bs')">BS (Simple)</button>
-    <button id="btnBS14" onclick="switchBoard('bs14')">BS 14.1</button>
+    <div class="switch-left">
+        <button id="btnBS" class="active" onclick="switchBoard('bs')">BS (Simple)</button>
+        <button id="btnBS14" onclick="switchBoard('bs14')">BS 14.1</button>
+    </div>
+
+    <div class="switch-actions" id="actions-bs">
+        <button onclick="resetScores('bs')">Reset</button>
+        <button onclick="togglePlayer3('bs')">3</button>
+    </div>
+
+    <div class="switch-actions" id="actions-bs14" style="display:none">
+        <button onclick="undoBS14()">Undo</button>
+        <button onclick="resetGame()">Reset</button>
+        <button onclick="foul()">Foul</button>
+    </div>
 </div>
 
 <div id="fullscreenBtn" onclick="toggleFullscreen()">⛶</div>
@@ -172,34 +244,31 @@ body {
     <!-- BS Simple -->
     <div id="bs" class="active">
         <div class="scoreboard">
-          <div class="player" onclick="addScore(1, 'bs')">
-            <div class="score p1" id="s1_1">0</div>
-            <div class="buttons">
-              <button onclick="event.stopPropagation(); addScore(1, 'bs')">+</button>
-              <button onclick="event.stopPropagation(); subtractScore(1, 'bs')">−</button>
+            <div class="player" onclick="addScore(1,'bs')">
+                <div class="score p1" id="s1_1">0</div>
+                <div class="buttons">
+                    <button onclick="event.stopPropagation(); addScore(1,'bs')">+</button>
+                    <button onclick="event.stopPropagation(); subtractScore(1,'bs')">−</button>
+                </div>
             </div>
-          </div>
+            <div class="player" onclick="addScore(2,'bs')">
+                <div class="score p2" id="s2_1">0</div>
+                <div class="buttons">
+                    <button onclick="event.stopPropagation(); addScore(2,'bs')">+</button>
+                    <button onclick="event.stopPropagation(); subtractScore(2,'bs')">−</button>
+                </div>
+            </div>
+            <div class="player" id="p3_1" style="display:none" onclick="addScore(3,'bs')">
+                <div class="score p3" id="s3_1">0</div>
+                <div class="buttons">
+                    <button onclick="event.stopPropagation(); addScore(3,'bs')">+</button>
+                    <button onclick="event.stopPropagation(); subtractScore(3,'bs')">−</button>
+                </div>
+            </div>
+        </div>
+        <div id="rackHistory" class="rack-history"></div>
 
-          <div class="player" onclick="addScore(2, 'bs')">
-              <div class="score p2" id="s2_1">0</div>
-              <div class="buttons">
-                  <button onclick="event.stopPropagation(); addScore(2, 'bs')">+</button>
-                  <button onclick="event.stopPropagation(); subtractScore(2, 'bs')">−</button>
-              </div>
-          </div>
-          <div class="player" id="p3_1" style="display:none" onclick="addScore(3, 'bs')">
-              <div class="score p3" id="s3_1">0</div>
-              <div class="buttons">
-                  <button onclick="event.stopPropagation(); addScore(3, 'bs')">+</button>
-                  <button onclick="event.stopPropagation(); subtractScore(3, 'bs')">−</button>
-              </div>
-          </div>
-        </div>
-        <div class="controls">
-            <button onclick="resetScores('bs')">Reset</button>
-            <button onclick="togglePlayer3('bs')">3</button>
-        </div>
-        <!-- <audio id="scoreSoundBS" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio> -->
+
         <audio id="scoreSoundBS" src="b.mp3" preload="auto"></audio>
     </div>
 
@@ -225,9 +294,6 @@ body {
                 </div>
                 <div class="bottom">
                     <div class="info">Balls before shot: <strong id="ballsLeft">15</strong></div>
-                    <button onclick="undo()">Undo</button>
-                    <button onclick="resetGame()">Reset</button>
-                    <button onclick="foul()">Foul</button>
                 </div>
             </div>
             <div class="right-panel">
@@ -249,187 +315,244 @@ body {
 </div>
 
 <script>
-// --- BOARD SWITCHING ---
-function switchBoard(boardId) {
-    document.querySelectorAll('#bsContainer > div').forEach(d => d.classList.remove('active'));
+/* ------------------ BS SIMPLE PRE-RENDERED ------------------ */
+/* ------------------ BS SIMPLE ------------------ */
+const MAX_RACKS = 30;
+let rackHistory = []; // array of winners: 1,2,3
+initRackHistory();
+
+function initRackHistory() {
+  const container = document.getElementById('rackHistory');
+  container.innerHTML = '';
+  for(let p=1;p<=3;p++){
+    const row = document.createElement('div');
+    row.className = 'rack-row';
+    row.id = `rack-row-${p}`;
+    row.style.display = (p===3?'none':'flex');
+    for(let i=0;i<MAX_RACKS;i++){
+      const c = document.createElement('div');
+      c.className = 'rack-circle';
+      row.appendChild(c);
+    }
+    container.appendChild(row);
+  }
+  renderRackHistory();
+}
+
+function renderRackHistory(){
+  for(let p=1;p<=3;p++){
+    const row = document.getElementById(`rack-row-${p}`);
+    if(!row) continue;
+    row.style.display = (p===3 && document.getElementById('p3_1').style.display==='none')?'none':'flex';
+    const circles = row.children;
+    for(let i=0;i<MAX_RACKS;i++){
+      circles[i].className = 'rack-circle'; // reset
+      if(rackHistory[i]===p){
+        circles[i].classList.add(`p${p}-won`);
+      }
+    }
+  }
+}
+
+// ------------------ SCORES ------------------
+function addScore(player){
+  const el = document.getElementById(`s${player}_1`);
+  el.textContent = parseInt(el.textContent)+1;
+  rackHistory.push(player); // record rack
+  renderRackHistory();
+  playScoreSound();
+}
+
+function subtractScore(player){
+  const el = document.getElementById(`s${player}_1`);
+  const v = parseInt(el.textContent);
+  if(v>0){
+    el.textContent = v-1;
+    // remove last rack for this player
+    for(let i=rackHistory.length-1;i>=0;i--){
+      if(rackHistory[i]===player){
+        rackHistory.splice(i,1);
+        break;
+      }
+    }
+    renderRackHistory();
+  }
+}
+
+function togglePlayer3(){
+  const row = document.getElementById('rack-row-3');
+  const p3Panel = document.getElementById('p3_1');
+  const show = row.style.display==='none';
+  row.style.display = show?'flex':'none';
+  if(p3Panel) p3Panel.style.display = show?'flex':'none';
+}
+
+function resetScores(){
+  [1,2,3].forEach(p=>{
+    const el = document.getElementById(`s${p}_1`);
+    if(el) el.textContent='0';
+  });
+  rackHistory = [];
+  renderRackHistory();
+}
+
+function playScoreSound(){
+  const sound = document.getElementById('scoreSoundBS');
+  if(sound){ sound.currentTime=0; sound.play(); }
+}
+
+// ------------------ INIT ------------------
+initRackHistory();
+
+// ------------------ BOARD SWITCHING ------------------
+function switchBoard(boardId){
+    document.querySelectorAll('#bsContainer > div').forEach(d=>d.classList.remove('active'));
     document.getElementById(boardId).classList.add('active');
-    document.querySelectorAll('.switcher button').forEach(b => b.classList.remove('active'));
-    document.getElementById('btn' + boardId.toUpperCase()).classList.add('active');
-    // Reset boards when switching
+    document.querySelectorAll('.switcher button').forEach(b=>b.classList.remove('active'));
+    document.getElementById('btn'+boardId.toUpperCase()).classList.add('active');
+    document.getElementById('actions-bs').style.display = boardId==='bs'?'flex':'none';
+    document.getElementById('actions-bs14').style.display = boardId==='bs14'?'flex':'none';
     if(boardId==='bs') resetScores('bs');
     if(boardId==='bs14') resetGame();
 }
 
-// --- BS SIMPLE FUNCTIONS ---
-function addScore(p, board) {
-    const el = document.getElementById(`s${p}_1`);
-    el.textContent = parseInt(el.textContent) + 1;
-    playScoreSound('bs');
-}
-function subtractScore(p, board) {
-    const el = document.getElementById(`s${p}_1`);
-    const v = parseInt(el.textContent);
-    if(v>0) el.textContent = v-1;
-}
-function resetScores(board) {
-    [1,2,3].forEach(p=>{
-        const el = document.getElementById(`s${p}_1`);
-        if(el) el.textContent='0';
-    });
-}
-function togglePlayer3(board) {
-    const p3 = document.getElementById('p3_1');
-    p3.style.display = p3.style.display==='none'?'flex':'none';
-}
-function playScoreSound(board) {
-    const sound = document.getElementById('scoreSoundBS');
-    if(sound) { sound.currentTime=0; sound.play(); }
-}
+// ------------------ BS 14.1 LOGIC ------------------
+let state = {scores:[0,0], ballsOnTable:15, current:0, fouls:[0,0], history:[], run:0, currentInning:[[],[]], completedInnings:[]};
 
-// --- BS 14.1 FUNCTIONS ---
-// Keep your existing BS14 logic unchanged
-let state = {
-    scores:[0,0], ballsOnTable:15, current:0, fouls:[0,0],
-    history:[], run:0, currentInning:[[],[]], completedInnings:[]
-};
-
-function snapshot() {
-    const snapshot = {
-        scores:[...state.scores], ballsOnTable:state.ballsOnTable,
-        current:state.current, fouls:[...state.fouls], run:state.run,
+function snapshot(){
+    const snap = {
+        scores:[...state.scores],
+        ballsOnTable:state.ballsOnTable,
+        current:state.current,
+        fouls:[...state.fouls],
+        run:state.run,
         currentInning:[[...state.currentInning[0]],[...state.currentInning[1]]]
     };
-    state.history.push(snapshot);
+    state.history.push(snap);
     if(state.history.length>50) state.history.shift();
 }
-function undo() {
+
+function undoBS14(){
     if(!state.history.length) return;
-    const prev=state.history.pop();
-    state.scores=prev.scores; state.ballsOnTable=prev.ballsOnTable;
-    state.current=prev.current; state.fouls=prev.fouls;
-    state.run=prev.run; state.currentInning=prev.currentInning;
+    const prev = state.history.pop();
+    state.scores = prev.scores;
+    state.ballsOnTable = prev.ballsOnTable;
+    state.current = prev.current;
+    state.fouls = prev.fouls;
+    state.run = prev.run;
+    state.currentInning = prev.currentInning;
     render();
 }
-function render() {
-    score1.textContent=state.scores[0]; score2.textContent=state.scores[1];
-    ballsLeft.textContent=state.ballsOnTable;
+
+function render(){
+    document.getElementById('score1').textContent=state.scores[0];
+    document.getElementById('score2').textContent=state.scores[1];
+    document.getElementById('ballsLeft').textContent=state.ballsOnTable;
     document.getElementById('foul1').textContent='Fouls: '+state.fouls[0];
     document.getElementById('foul2').textContent='Fouls: '+state.fouls[1];
     document.getElementById('run1').textContent='Run: '+(state.current===0?state.run:0);
     document.getElementById('run2').textContent='Run: '+(state.current===1?state.run:0);
-    p1.classList.toggle("active",state.current===0);
-    p2.classList.toggle("active",state.current===1);
-    renderButtons(); renderInningsTable();
+    document.getElementById('p1').classList.toggle("active",state.current===0);
+    document.getElementById('p2').classList.toggle("active",state.current===1);
+    renderButtons();
+    renderInningsTable();
 }
-function renderButtons() {
-    const container=document.getElementById("buttons");
+
+function renderButtons(){
+    const container = document.getElementById("buttons");
     container.innerHTML='';
-    const max=Math.min(15,state.ballsOnTable);
+    const max = Math.min(15,state.ballsOnTable);
     for(let i=1;i<=max;i++){
-        const b=document.createElement("button");
-        b.textContent=i;
-        b.onclick=()=>handleSelection(i);
+        const b = document.createElement("button");
+        b.textContent = i;
+        b.onclick = () => handleSelection(i);
         container.appendChild(b);
     }
 }
+
 function handleSelection(selected){
     snapshot();
-    const p=state.current;
+    const p = state.current;
     state.fouls[p]=0;
-    let points=0;
+    let points = 0;
     if(selected===1){
-        points=state.ballsOnTable-1; state.run+=points; state.ballsOnTable=15;
-        flashRack(p);
-        state.currentInning[p].push(points);
-        state.scores[p]+=points; render(); return;
+        points = state.ballsOnTable-1; state.run+=points; state.ballsOnTable=15;
+        flashRack(p); state.currentInning[p].push(points); state.scores[p]+=points; render(); return;
     }
-    points=state.ballsOnTable-selected; state.ballsOnTable=selected; state.run=0;
+    points = state.ballsOnTable-selected; state.ballsOnTable=selected; state.run=0;
     state.currentInning[p].push(points); state.scores[p]+=points;
     if(points>0) finalizeInning();
-    state.current=1-p;
+    state.current = 1-p;
     render();
 }
+
 function finalizeInning(){
-    const hasPoints=state.currentInning[0].length>0 || state.currentInning[1].length>0;
-    if(!hasPoints) return;
-    const row=[state.currentInning[0].slice(), sumArray(state.currentInning[0]),
-               state.currentInning[1].slice(), sumArray(state.currentInning[1]),
-               state.ballsOnTable];
+    if(state.currentInning[0].length===0 && state.currentInning[1].length===0) return;
+    const row = [
+        state.currentInning[0].slice(), sumArray(state.currentInning[0]),
+        state.currentInning[1].slice(), sumArray(state.currentInning[1]),
+        state.ballsOnTable
+    ];
     state.completedInnings.push(row);
-    state.currentInning=[[],[]];
+    state.currentInning = [[],[]];
 }
+
 function flashRack(player){
-    const el=player===0?p1:p2;
+    const el = player===0?document.getElementById('p1'):document.getElementById('p2');
     el.style.boxShadow='0 0 40px 10px gold';
     setTimeout(()=>{el.style.boxShadow='';},800);
 }
+
 function switchPlayer(p){
-    snapshot(); finalizeInning();
-    state.current=p; state.run=0; render();
+    snapshot();
+    finalizeInning();
+    state.current = p;
+    state.run = 0;
+    render();
 }
+
 function foul(){
-    snapshot(); const p=state.current; state.fouls[p]++; state.run=0; let points=-1;
+    snapshot();
+    const p = state.current;
+    state.fouls[p]++;
+    state.run = 0;
+    let points = -1;
     if(state.fouls[p]===3){ points=-15; state.fouls[p]=0; state.ballsOnTable=15; }
     else if(state.ballsOnTable===1) state.ballsOnTable=15;
-    state.scores[p]+=points; state.currentInning[p].push(points);
-    state.current=1-p; finalizeInning(); render();
+    state.scores[p]+=points;
+    state.currentInning[p].push(points);
+    state.current = 1-p;
+    finalizeInning();
+    render();
 }
+
 function sumArray(arr){ return arr.reduce((a,b)=>a+b,0); }
+
 function renderInningsTable(){
-    const tbody=document.getElementById('inningsTable'); tbody.innerHTML='';
+    const tbody=document.getElementById('inningsTable');
+    tbody.innerHTML='';
     state.completedInnings.forEach(r=>{
-        const tr=document.createElement('tr');
+        const tr = document.createElement('tr');
         tr.innerHTML=`<td>${r[0].join('/')}</td><td>${r[1]}</td><td>${r[2].join('/')}</td><td>${r[3]}</td><td>${r[4]}</td>`;
         tbody.appendChild(tr);
     });
 }
-function toggleFullscreen() {
+
+// ------------------ MISC ------------------
+function toggleFullscreen(){
     if(!document.fullscreenElement) document.documentElement.requestFullscreen();
     else document.exitFullscreen();
 }
+
 function resetGame(){
     if(!confirm("Reset game?")) return;
-    state={scores:[0,0], ballsOnTable:15, current:0, fouls:[0,0], history:[], run:0, currentInning:[[],[]], completedInnings:[]};
+    state = {scores:[0,0], ballsOnTable:15, current:0, fouls:[0,0], history:[], run:0, currentInning:[[],[]], completedInnings:[]};
     render();
 }
+
 render();
-
-// --- BS SIMPLE: TAP = +1, SWIPE DOWN = -1 (NO SCROLL) ---
-document.querySelectorAll('#bs .player').forEach(player => {
-    let startY = null;
-    let moved = false;
-
-    player.addEventListener('pointerdown', e => {
-        startY = e.clientY;
-        moved = false;
-        player.setPointerCapture(e.pointerId);
-    });
-
-    player.addEventListener('pointermove', e => {
-        if(startY === null) return;
-        if(Math.abs(e.clientY - startY) > 10) moved = true;
-    });
-
-    player.addEventListener('pointerup', e => {
-        if(startY === null) return;
-
-        const diff = e.clientY - startY;
-        const scoreEl = player.querySelector('.score');
-
-        // SWIPE DOWN
-        if(moved && diff > 40) {
-            const v = parseInt(scoreEl.textContent);
-            if(v > 0) scoreEl.textContent = v - 1;
-        }
-
-        startY = null;
-        moved = false;
-        player.releasePointerCapture(e.pointerId);
-    });
-});
-
-
 </script>
+
 
 </body>
 </html>
