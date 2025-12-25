@@ -148,9 +148,9 @@ body {
 .rack-history { display:flex; flex-direction:column; gap:6px; width:100%; padding:0 10px; box-sizing:border-box; }
 .rack-row { display:flex; gap:4px; justify-content:center; flex-wrap:wrap; }
 .rack-circle { width:20px; height:20px; border-radius:50%; background:#333; }
-.rack-circle.p1-won { background:#22c55e; }
-.rack-circle.p2-won { background:#4da3ff; }
-.rack-circle.p3-won { background:#ffd84d; }
+.rack-circle.p1-won { background:var(--blue); }
+.rack-circle.p2-won { background:var(--red); }
+.rack-circle.p3-won { background:var(--yellow); }
 
 #bs .scoreboard {
     flex:1;
@@ -185,7 +185,8 @@ body {
 #bs .p1 { color: var(--blue); }
 #bs .p2 { color: var(--red); }
 #bs .p3 { color: var(--yellow); }
-#bs .buttons { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+/* #bs .buttons { display:grid; grid-template-columns: 1fr 1fr; gap:12px; } */
+#bs .buttons { display:none }
 #bs button { font-size:5vw; padding:20px 0; background:var(--btn); color:white; border:none; border-radius:14px; cursor:pointer; }
 #bs button:hover { background:var(--btn-hover); }
 #bs .controls { display:flex; justify-content:center; gap:20px; padding:12px; background:#000; }
@@ -228,6 +229,7 @@ body {
 
     <div class="switch-actions" id="actions-bs">
         <button onclick="resetScores('bs')">Reset</button>
+        <button onclick="undoLast()">Undo</button>
         <button onclick="togglePlayer3('bs')">3</button>
     </div>
 
@@ -317,8 +319,9 @@ body {
 <script>
 /* ------------------ BS SIMPLE PRE-RENDERED ------------------ */
 /* ------------------ BS SIMPLE ------------------ */
-const MAX_RACKS = 30;
-let rackHistory = []; // array of winners: 1,2,3
+const MAX_RACKS = 50;
+let rackHistory = [];
+let actionHistory = []; // stores {player:1, points:1} for undo
 initRackHistory();
 
 function initRackHistory() {
@@ -346,7 +349,7 @@ function renderRackHistory(){
     row.style.display = (p===3 && document.getElementById('p3_1').style.display==='none')?'none':'flex';
     const circles = row.children;
     for(let i=0;i<MAX_RACKS;i++){
-      circles[i].className = 'rack-circle'; // reset
+      circles[i].className = 'rack-circle';
       if(rackHistory[i]===p){
         circles[i].classList.add(`p${p}-won`);
       }
@@ -354,29 +357,30 @@ function renderRackHistory(){
   }
 }
 
-// ------------------ SCORES ------------------
 function addScore(player){
   const el = document.getElementById(`s${player}_1`);
   el.textContent = parseInt(el.textContent)+1;
-  rackHistory.push(player); // record rack
+  rackHistory.push(player);
+  actionHistory.push({player:player});
   renderRackHistory();
   playScoreSound();
 }
 
-function subtractScore(player){
+function undoLast(){
+  if(actionHistory.length===0) return;
+  const last = actionHistory.pop();
+  const player = last.player;
   const el = document.getElementById(`s${player}_1`);
   const v = parseInt(el.textContent);
-  if(v>0){
-    el.textContent = v-1;
-    // remove last rack for this player
-    for(let i=rackHistory.length-1;i>=0;i--){
-      if(rackHistory[i]===player){
-        rackHistory.splice(i,1);
-        break;
-      }
+  if(v>0) el.textContent = v-1;
+  // remove last rack entry
+  for(let i=rackHistory.length-1;i>=0;i--){
+    if(rackHistory[i]===player){
+      rackHistory.splice(i,1);
+      break;
     }
-    renderRackHistory();
   }
+  renderRackHistory();
 }
 
 function togglePlayer3(){
@@ -393,6 +397,7 @@ function resetScores(){
     if(el) el.textContent='0';
   });
   rackHistory = [];
+  actionHistory = [];
   renderRackHistory();
 }
 
