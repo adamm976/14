@@ -83,6 +83,12 @@ body {
     cursor: pointer;
 }
 
+#bs .player {
+    touch-action: none;   /* critical */
+}
+#bs .player:active {
+    transform: scale(0.98);
+}
 #bs .score {
     pointer-events: none; /* score never eats the click */
 }
@@ -388,27 +394,40 @@ function resetGame(){
 }
 render();
 
-// --- BS SIMPLE TOUCH / SWIPE DOWN TO DECREASE ---
+// --- BS SIMPLE: TAP = +1, SWIPE DOWN = -1 (NO SCROLL) ---
 document.querySelectorAll('#bs .player').forEach(player => {
-    let startY = 0;
+    let startY = null;
+    let moved = false;
 
-    player.addEventListener('touchstart', e => {
-        startY = e.touches[0].clientY;
-    }, {passive:true});
+    player.addEventListener('pointerdown', e => {
+        startY = e.clientY;
+        moved = false;
+        player.setPointerCapture(e.pointerId);
+    });
 
-    player.addEventListener('touchend', e => {
-        const endY = e.changedTouches[0].clientY;
-        const diff = endY - startY;
+    player.addEventListener('pointermove', e => {
+        if(startY === null) return;
+        if(Math.abs(e.clientY - startY) > 10) moved = true;
+    });
 
-        // swipe down threshold
-        if(diff > 40) {
-            const scoreEl = player.querySelector('.score');
-            if(!scoreEl) return;
+    player.addEventListener('pointerup', e => {
+        if(startY === null) return;
+
+        const diff = e.clientY - startY;
+        const scoreEl = player.querySelector('.score');
+
+        // SWIPE DOWN
+        if(moved && diff > 40) {
             const v = parseInt(scoreEl.textContent);
             if(v > 0) scoreEl.textContent = v - 1;
         }
+
+        startY = null;
+        moved = false;
+        player.releasePointerCapture(e.pointerId);
     });
 });
+
 
 </script>
 
