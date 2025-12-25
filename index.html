@@ -89,18 +89,22 @@ body {
 
 #bs .score {
     text-align:center;
-    font-size:22vw;
+    font-size:28vw; /* bigger */
     font-weight:bold;
-    height:100%; /* force container to respect font size */
+    height:100%;
     display:flex;
     align-items:center;
     justify-content:center;
+    user-select:none;
 }
+
 
 #bs .p1 { color: var(--blue); }
 #bs .p2 { color: var(--red); }
 #bs .p3 { color: var(--yellow); }
-#bs .buttons { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+/* #bs .buttons { display:grid; grid-template-columns: 1fr 1fr; gap:12px; } */
+#bs .buttons { display:none; }
+
 #bs button { font-size:5vw; padding:20px 0; background:var(--btn); color:white; border:none; border-radius:14px; cursor:pointer; }
 #bs button:hover { background:var(--btn-hover); }
 #bs .controls { display:flex; justify-content:center; gap:20px; padding:12px; background:#000; }
@@ -126,6 +130,27 @@ body {
 #bs14 th, #bs14 td { padding:8px; text-align:center; border-bottom:1px solid #333; }
 #bs14 th { background:#222; }
 #bs14 td { background:#161b22; }
+
+#bs14 {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+}
+
+#bs14 .top-container {
+    flex:1;
+    min-height:0;
+}
+
+#bs14 .left-panel,
+#bs14 .right-panel {
+    min-height:0;
+}
+
+#bs14 .right-panel {
+    overflow-y:auto;
+}
+
 </style>
 </head>
 <body>
@@ -362,6 +387,29 @@ function resetGame(){
     render();
 }
 render();
+
+// --- BS SIMPLE TOUCH / SWIPE DOWN TO DECREASE ---
+document.querySelectorAll('#bs .player').forEach(player => {
+    let startY = 0;
+
+    player.addEventListener('touchstart', e => {
+        startY = e.touches[0].clientY;
+    }, {passive:true});
+
+    player.addEventListener('touchend', e => {
+        const endY = e.changedTouches[0].clientY;
+        const diff = endY - startY;
+
+        // swipe down threshold
+        if(diff > 40) {
+            const scoreEl = player.querySelector('.score');
+            if(!scoreEl) return;
+            const v = parseInt(scoreEl.textContent);
+            if(v > 0) scoreEl.textContent = v - 1;
+        }
+    });
+});
+
 </script>
 
 </body>
