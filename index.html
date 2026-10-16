@@ -223,6 +223,52 @@ body {
 #bs14 .top-container { flex:1; min-height:0; }
 #bs14 .left-panel, #bs14 .right-panel { min-height:0; }
 #bs14 .right-panel { overflow-y:auto; }
+
+/* ---------------- WPA ROTATION ---------------- */
+#rotation { display:none; flex:1; flex-direction:column; min-height:0; padding:16px; gap:16px; box-sizing:border-box; }
+#rotation.active { display:flex; }
+.rotation-scoreboard { flex:1; min-height:220px; display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.rotation-player { min-width:0; background:var(--panel); border-radius:16px; padding:16px; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; }
+.rotation-player.active { outline:4px solid white; }
+.rotation-score { flex:1; display:flex; align-items:center; justify-content:center; font-size:clamp(90px,20vw,300px); font-weight:bold; line-height:1; }
+.rotation-p1 { color:var(--blue); }
+.rotation-p2 { color:var(--red); }
+.rotation-player-label { text-align:center; opacity:.85; font-size:clamp(12px,1.5vw,18px); padding-top:12px; }
+.rotation-balls-panel { background:var(--panel); border-radius:14px; padding:16px; }
+.rotation-heading { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+.rotation-heading span { opacity:.8; }
+.rotation-balls { display:grid; grid-template-columns:repeat(8,minmax(36px,1fr)); gap:clamp(8px,1.5vw,16px); }
+.rotation-ball { aspect-ratio:1; width:100%; max-width:88px; justify-self:center; border-radius:50%; border:3px solid rgba(255,255,255,.8); box-shadow:inset -5px -7px 10px rgba(0,0,0,.35), inset 4px 4px 8px rgba(255,255,255,.45), 0 3px 6px rgba(0,0,0,.35); color:white; font-size:clamp(15px,2.3vw,26px); font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; text-shadow:0 1px 3px #000, 0 0 3px #000; }
+.rotation-ball:disabled { visibility:hidden; cursor:default; }
+.rotation-ball:focus-visible { outline:4px solid white; outline-offset:3px; }
+.rotation-ball.ball-1,.rotation-ball.ball-9 { background:#f4d21f; color:#111; text-shadow:none; }
+.rotation-ball.ball-2,.rotation-ball.ball-10 { background:#2475d8; }
+.rotation-ball.ball-3,.rotation-ball.ball-11 { background:#d92727; }
+.rotation-ball.ball-4,.rotation-ball.ball-12 { background:#7b3fb5; }
+.rotation-ball.ball-5,.rotation-ball.ball-13 { background:#f08b22; color:#111; text-shadow:none; }
+.rotation-ball.ball-6,.rotation-ball.ball-14 { background:#21834b; }
+.rotation-ball.ball-7,.rotation-ball.ball-15 { background:#8b2635; }
+.rotation-ball.ball-8 { background:#171717; }
+.rotation-ball.ball-9,.rotation-ball.ball-10,.rotation-ball.ball-11,.rotation-ball.ball-12,.rotation-ball.ball-13,.rotation-ball.ball-14,.rotation-ball.ball-15 { position:relative; }
+.rotation-ball.ball-9::before,.rotation-ball.ball-10::before,.rotation-ball.ball-11::before,.rotation-ball.ball-12::before,.rotation-ball.ball-13::before,.rotation-ball.ball-14::before,.rotation-ball.ball-15::before { content:""; position:absolute; left:0; right:0; top:28%; height:44%; background:#fff; z-index:0; }
+.rotation-ball span { position:relative; z-index:1; display:flex; align-items:center; justify-content:center; width:34%; aspect-ratio:1; border-radius:50%; background:#fff; color:#111; font-size:.65em; text-shadow:none; }
+.rotation-note { margin-top:14px; text-align:center; opacity:.8; }
+.rotation-rules { background:#111820; border-radius:12px; padding:12px 16px; line-height:1.5; }
+.rotation-rules summary { cursor:pointer; font-weight:bold; }
+.rotation-rules ul { margin-bottom:4px; }
+@media(max-width:600px) {
+  .switcher { padding:10px 8px; flex-wrap:wrap; gap:8px; }
+  .switch-left { flex-wrap:wrap; gap:6px; }
+  .switcher button { padding:8px 10px; font-size:13px; }
+  .switch-actions { position:static; transform:none; margin-left:auto; gap:6px; }
+  .switch-actions button { min-width:0; }
+  #rotation { padding:8px; gap:8px; }
+  .rotation-scoreboard { min-height:180px; gap:8px; }
+  .rotation-player { padding:10px; }
+  .rotation-balls-panel { padding:10px; }
+  .rotation-balls { grid-template-columns:repeat(5,minmax(32px,1fr)); gap:8px; }
+  .rotation-heading { font-size:14px; margin-bottom:10px; }
+}
 </style>
 </head>
 <body>
@@ -231,6 +277,7 @@ body {
     <div class="switch-left">
         <button id="btnBS" class="active" onclick="switchBoard('bs')">BS (Simple)</button>
         <button id="btnBS14" onclick="switchBoard('bs14')">BS 14.1</button>
+        <button id="btnROTATION" onclick="switchBoard('rotation')">Rotation</button>
     </div>
 
     <div class="switch-actions" id="actions-bs">
@@ -243,6 +290,11 @@ body {
         <button onclick="undoBS14()">Undo</button>
         <button onclick="resetGame()">Reset</button>
         <button onclick="foul()">Foul</button>
+    </div>
+
+    <div class="switch-actions" id="actions-rotation" style="display:none">
+        <button onclick="undoRotation()">Undo</button>
+        <button onclick="resetRotation()">Reset</button>
     </div>
 </div>
 
@@ -308,6 +360,28 @@ body {
                     <tbody id="inningsTable"></tbody>
                 </table>
             </div>
+        </div>
+    </div>
+
+    <!-- WPA Rotation: separate board and state; existing boards above remain unchanged. -->
+    <div id="rotation">
+        <div class="rotation-scoreboard">
+            <div class="rotation-player active" id="rotationP1" onclick="selectRotationPlayer(0)">
+                <div class="rotation-score rotation-p1" id="rotationScore1">0</div>
+                <div class="rotation-player-label">Player 1 · first to 61</div>
+            </div>
+            <div class="rotation-player" id="rotationP2" onclick="selectRotationPlayer(1)">
+                <div class="rotation-score rotation-p2" id="rotationScore2">0</div>
+                <div class="rotation-player-label">Player 2 · first to 61</div>
+            </div>
+        </div>
+        <div class="rotation-balls-panel">
+            <div class="rotation-heading">
+                <strong>Balls on table</strong>
+                <span id="rotationBallsLeft">15 balls · 120 points available</span>
+            </div>
+            <div class="rotation-balls" id="rotationBalls"></div>
+            <div class="rotation-note" id="rotationStatus">Select the ball that was legally pocketed. Its number is added to the active player's score.</div>
         </div>
     </div>
 </div>
@@ -420,12 +494,12 @@ initRackHistory();
 function switchBoard(boardId){
     document.querySelectorAll('#bsContainer > div').forEach(d=>d.classList.remove('active'));
     document.getElementById(boardId).classList.add('active');
-    document.querySelectorAll('.switcher button').forEach(b=>b.classList.remove('active'));
-    document.getElementById('btn'+boardId.toUpperCase()).classList.add('active');
+    document.querySelectorAll('.switcher .switch-left button').forEach(b=>b.classList.remove('active'));
+    const buttonIds = {bs:'btnBS', bs14:'btnBS14', rotation:'btnROTATION'};
+    document.getElementById(buttonIds[boardId]).classList.add('active');
     document.getElementById('actions-bs').style.display = boardId==='bs'?'flex':'none';
     document.getElementById('actions-bs14').style.display = boardId==='bs14'?'flex':'none';
-    if(boardId==='bs') resetScores('bs');
-    if(boardId==='bs14') resetGame();
+    document.getElementById('actions-rotation').style.display = boardId==='rotation'?'flex':'none';
 }
 
 // ------------------ BS 14.1 LOGIC ------------------
@@ -563,6 +637,89 @@ function resetGame(){
 }
 
 render();
+
+/* ------------------ WPA ROTATION LOGIC ------------------ */
+let rotationState = {
+    scores:[0,0],
+    current:0,
+    remaining:Array.from({length:15},(_,i)=>i+1),
+    history:[],
+    winner:null
+};
+
+function snapshotRotation(){
+    rotationState.history.push({
+        scores:[...rotationState.scores],
+        current:rotationState.current,
+        remaining:[...rotationState.remaining],
+        winner:rotationState.winner
+    });
+    if(rotationState.history.length>100) rotationState.history.shift();
+}
+
+function selectRotationPlayer(player){
+    if(rotationState.winner!==null) return;
+    snapshotRotation();
+    rotationState.current=player;
+    renderRotation();
+}
+
+function pocketRotationBall(number){
+    if(rotationState.winner!==null || !rotationState.remaining.includes(number)) return;
+    snapshotRotation();
+    rotationState.remaining=rotationState.remaining.filter(n=>n!==number);
+    rotationState.scores[rotationState.current]+=number;
+    if(rotationState.scores[rotationState.current]>=61){
+        rotationState.winner=rotationState.current;
+    }
+    renderRotation();
+}
+
+function undoRotation(){
+    if(!rotationState.history.length) return;
+    const previous=rotationState.history.pop();
+    rotationState.scores=previous.scores;
+    rotationState.current=previous.current;
+    rotationState.remaining=previous.remaining;
+    rotationState.winner=previous.winner;
+    renderRotation();
+}
+
+function resetRotation(){
+    if(!confirm('Reset Rotation game?')) return;
+    rotationState={scores:[0,0],current:0,remaining:Array.from({length:15},(_,i)=>i+1),history:[],winner:null};
+    renderRotation();
+}
+
+function renderRotation(){
+    document.getElementById('rotationScore1').textContent=rotationState.scores[0];
+    document.getElementById('rotationScore2').textContent=rotationState.scores[1];
+    document.getElementById('rotationP1').classList.toggle('active',rotationState.current===0);
+    document.getElementById('rotationP2').classList.toggle('active',rotationState.current===1);
+    const remaining=document.getElementById('rotationBallsLeft');
+    remaining.textContent=rotationState.remaining.length+' balls · '+rotationState.remaining.reduce((sum,n)=>sum+n,0)+' points available';
+    const container=document.getElementById('rotationBalls');
+    container.innerHTML='';
+    for(let n=1;n<=15;n++){
+        const button=document.createElement('button');
+        button.type='button';
+        button.className='rotation-ball ball-'+n;
+        button.setAttribute('aria-label','Pocket ball '+n+', worth '+n+' points');
+        button.disabled=!rotationState.remaining.includes(n) || rotationState.winner!==null;
+        const number=document.createElement('span');
+        number.textContent=n;
+        button.appendChild(number);
+        button.onclick=()=>pocketRotationBall(n);
+        container.appendChild(button);
+    }
+    const status=document.getElementById('rotationStatus');
+    if(rotationState.winner!==null){
+        status.textContent='Player '+(rotationState.winner+1)+' wins with '+rotationState.scores[rotationState.winner]+' points!';
+    } else {
+        status.textContent='Player '+(rotationState.current+1)+' to shoot · click a legally pocketed ball. Tap a player score to switch turns.';
+    }
+}
+renderRotation();
 </script>
 
 
