@@ -3,185 +3,522 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Straight Pool 14.1 Scoreboard</title>
+<title>Billiard Scoreboards</title>
 <style>
 :root {
     --bg:#0e1117;
     --panel:#161b22;
     --blue:#4da3ff;
     --red:#ff4d4d;
+    --yellow:#ffd84d;
     --btn:#222;
     --btn-hover:#333;
     --table-bg:#1a1f28;
+    color:white;
 }
 body {
     margin:0;
     background:var(--bg);
     color:white;
     font-family:Arial, sans-serif;
+    height:100vh;
     display:flex;
     flex-direction:column;
-    min-height:100vh;
 }
-.top-container {
-    display:flex;
-    gap:20px;
-    padding:20px;
-    flex:1;
-}
-.left-panel {
-    flex:2;
-    display:flex;
-    flex-direction:column;
-    gap:20px;
-}
-.right-panel {
-    flex:1;
-    max-width:350px;
-    overflow-x:auto;
-}
-.scoreboard {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
-}
-.player {
-    background:var(--panel);
-    border-radius:16px;
-    padding:20px;
-    display:flex;
-    flex-direction:column;
-    cursor:pointer;
-}
-.player.active { outline:4px solid white; }
-.score {
-    flex:1;
+
+/* SWITCHER */
+.switcher {
+    position:relative;
     display:flex;
     align-items:center;
-    justify-content:center;
-    font-size:clamp(120px, 20vw, 420px);
-    font-weight:bold;
+    padding:12px 20px;
+    background:linear-gradient(180deg,#161b22,#0e1117);
+    border-bottom:1px solid #222;
 }
-.p1 { color:var(--blue); }
-.p2 { color:var(--red); }
-.info { text-align:center; font-size:18px; opacity:0.9; }
-.panel {
-    background:var(--panel);
-    padding:16px;
+.switch-left {
+    display:flex;
+    gap:10px;
+    z-index:2;
+}
+.switch-actions {
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:12px;
+    z-index:1;
+}
+
+.switcher button {
+    appearance:none;
+    border:none;
     border-radius:12px;
+    padding:10px 18px;
+    font-size:15px;
+    font-weight:600;
+    letter-spacing:.3px;
+    color:#e6edf3;
+    background:linear-gradient(180deg,#21262d,#161b22);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.05),
+        0 4px 12px rgba(0,0,0,.4);
+    cursor:pointer;
+    transition:all .15s ease;
 }
-.grid {
-    display:grid;
-    grid-template-columns:repeat(5, 1fr);
+
+.switcher button:hover {
+    background:linear-gradient(180deg,#2a3038,#1c2128);
+}
+
+.switcher button:active {
+    transform:translateY(1px);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.04),
+        0 2px 6px rgba(0,0,0,.5);
+}
+.switcher button.active {
+    background:linear-gradient(180deg,#3b82f6,#2563eb);
+    color:white;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.2),
+        0 6px 18px rgba(59,130,246,.4);
+}
+
+.switch-left {
+    display:flex;
     gap:10px;
 }
-button {
-    background:var(--btn);
-    color:white;
-    border:none;
-    border-radius:10px;
-    padding:14px 0;
-    font-size:20px;
-    cursor:pointer;
-}
-button:hover { background:var(--btn-hover); }
-.bottom {
+
+.switch-actions {
     display:flex;
     justify-content:center;
     gap:12px;
-    flex-wrap:wrap;
-    padding:10px;
-    background:#000;
 }
-table {
-    width:100%;
-    border-collapse:collapse;
-    background:var(--table-bg);
-    border-radius:10px;
-    overflow:hidden;
+.switch-actions button {
+    min-width:90px;
 }
-th, td {
-    padding:8px;
+
+@media (max-width:600px) {
+    .switch-actions {
+        gap:8px;
+    }
+}
+
+#actions-bs14 button:nth-child(1) {
+    background:linear-gradient(180deg,#374151,#1f2937);
+}
+#actions-bs14 button:nth-child(3) {
+    background:linear-gradient(180deg,#7f1d1d,#450a0a);
+}
+#actions-bs14 button:nth-child(3):hover {
+    background:linear-gradient(180deg,#991b1b,#5f0f0f);
+}
+#actions-bs button:nth-child(2) {
+    padding:10px 22px;
+    border-radius:999px;
+    background:linear-gradient(180deg,#2d333b,#1c2128);
+}
+
+.switcher button {
+    padding:8px 14px;
+    font-size:16px;
+}
+
+
+/* FULLSCREEN BUTTON */
+#fullscreenBtn {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 9999;
+    background: rgba(0,0,0,0.6);
+    border-radius: 8px;
+    padding: 6px 10px;
+    user-select: none;
+}
+#fullscreenBtn:hover { background: rgba(255,255,255,0.15); }
+
+/* Container for boards */
+#bsContainer > div { display:none; flex:1; flex-direction:column; }
+#bsContainer > div.active { display:flex; }
+
+/* ---------------- BS SIMPLE ---------------- */
+.rack-history { display:flex; flex-direction:column; gap:6px; width:100%; padding:0 10px; box-sizing:border-box; }
+.rack-row { display:flex; gap:4px; justify-content:center; flex-wrap:wrap; }
+.rack-circle { width:20px; height:20px; border-radius:50%; background:#333; }
+.rack-circle.p1-won { background:var(--blue); }
+.rack-circle.p2-won { background:var(--red); }
+.rack-circle.p3-won { background:var(--yellow); }
+
+#bs .scoreboard {
+    flex:1;
+    display:grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap:20px;
+    padding:20px;
+}
+.player {
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+#bs .player {
+    background: var(--panel);
+    border-radius:16px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:20px;
+    cursor: pointer;
+    touch-action: none;
+}
+#bs .player:active { transform: scale(0.98); }
+#bs .score {
+    pointer-events: none;
     text-align:center;
-    border-bottom:1px solid #333;
+    font-size:28vw;
+    font-weight:bold;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    user-select:none;
 }
-th { background:#222; }
-td { background:#161b22; }
+#bs .p1 { color: var(--blue); }
+#bs .p2 { color: var(--red); }
+#bs .p3 { color: var(--yellow); }
+/* #bs .buttons { display:grid; grid-template-columns: 1fr 1fr; gap:12px; } */
+#bs .buttons { display:none }
+#bs button { font-size:5vw; padding:20px 0; background:var(--btn); color:white; border:none; border-radius:14px; cursor:pointer; }
+#bs button:hover { background:var(--btn-hover); }
+#bs .controls { display:flex; justify-content:center; gap:20px; padding:12px; background:#000; }
+#bs .controls button { font-size:22px; padding:10px 20px; }
+
+/* ---------------- BS 14.1 ---------------- */
+#bs14 .top-container { display:flex; gap:20px; padding:20px; flex:1; }
+#bs14 .left-panel { flex:2; display:flex; flex-direction:column; gap:20px; }
+#bs14 .right-panel { flex:1; max-width:350px; overflow-x:auto; }
+#bs14 .scoreboard { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+#bs14 .player { background:var(--panel); border-radius:16px; padding:20px; display:flex; flex-direction:column; cursor:pointer; }
+#bs14 .player.active { outline:4px solid white; }
+#bs14 .score { flex:1; display:flex; align-items:center; justify-content:center; font-size:clamp(120px,20vw,420px); font-weight:bold; }
+#bs14 .p1 { color:var(--blue); }
+#bs14 .p2 { color:var(--red); }
+#bs14 .info { text-align:center; font-size:18px; opacity:0.9; }
+#bs14 .panel { background:var(--panel); padding:16px; border-radius:12px; }
+#bs14 .grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+#bs14 button { background:var(--btn); color:white; border:none; border-radius:10px; padding:14px 0; font-size:20px; cursor:pointer; }
+#bs14 button:hover { background:var(--btn-hover); }
+#bs14 .bottom { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; padding:10px; background:#000; }
+#bs14 table { width:100%; border-collapse:collapse; background:var(--table-bg); border-radius:10px; overflow:hidden; }
+#bs14 th, #bs14 td { padding:8px; text-align:center; border-bottom:1px solid #333; }
+#bs14 th { background:#222; }
+#bs14 td { background:#161b22; }
+
+#bs14 { flex:1; display:flex; flex-direction:column; }
+#bs14 .top-container { flex:1; min-height:0; }
+#bs14 .left-panel, #bs14 .right-panel { min-height:0; }
+#bs14 .right-panel { overflow-y:auto; }
+
+/* ---------------- WPA ROTATION ---------------- */
+#rotation { display:none; flex:1; flex-direction:column; min-height:0; padding:16px; gap:16px; box-sizing:border-box; }
+#rotation.active { display:flex; }
+.rotation-scoreboard { flex:1; min-height:220px; display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.rotation-player { min-width:0; background:var(--panel); border-radius:16px; padding:16px; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; }
+.rotation-player.active { outline:4px solid white; }
+.rotation-score { flex:1; display:flex; align-items:center; justify-content:center; font-size:clamp(90px,20vw,300px); font-weight:bold; line-height:1; }
+.rotation-p1 { color:var(--blue); }
+.rotation-p2 { color:var(--red); }
+.rotation-player-label { text-align:center; opacity:.85; font-size:clamp(12px,1.5vw,18px); padding-top:12px; }
+.rotation-balls-panel { background:var(--panel); border-radius:14px; padding:16px; }
+.rotation-heading { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+.rotation-heading span { opacity:.8; }
+.rotation-balls { display:grid; grid-template-columns:repeat(8,minmax(36px,1fr)); gap:clamp(8px,1.5vw,16px); }
+.rotation-ball { aspect-ratio:1; width:100%; max-width:88px; justify-self:center; border-radius:50%; border:3px solid rgba(255,255,255,.8); box-shadow:inset -5px -7px 10px rgba(0,0,0,.35), inset 4px 4px 8px rgba(255,255,255,.45), 0 3px 6px rgba(0,0,0,.35); color:white; font-size:clamp(15px,2.3vw,26px); font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; text-shadow:0 1px 3px #000, 0 0 3px #000; }
+.rotation-ball:disabled { visibility:hidden; cursor:default; }
+.rotation-ball:focus-visible { outline:4px solid white; outline-offset:3px; }
+.rotation-ball.ball-1,.rotation-ball.ball-9 { background:#f4d21f; color:#111; text-shadow:none; }
+.rotation-ball.ball-2,.rotation-ball.ball-10 { background:#2475d8; }
+.rotation-ball.ball-3,.rotation-ball.ball-11 { background:#d92727; }
+.rotation-ball.ball-4,.rotation-ball.ball-12 { background:#7b3fb5; }
+.rotation-ball.ball-5,.rotation-ball.ball-13 { background:#f08b22; color:#111; text-shadow:none; }
+.rotation-ball.ball-6,.rotation-ball.ball-14 { background:#21834b; }
+.rotation-ball.ball-7,.rotation-ball.ball-15 { background:#8b2635; }
+.rotation-ball.ball-8 { background:#171717; }
+.rotation-ball.ball-9,.rotation-ball.ball-10,.rotation-ball.ball-11,.rotation-ball.ball-12,.rotation-ball.ball-13,.rotation-ball.ball-14,.rotation-ball.ball-15 { position:relative; }
+.rotation-ball.ball-9::before,.rotation-ball.ball-10::before,.rotation-ball.ball-11::before,.rotation-ball.ball-12::before,.rotation-ball.ball-13::before,.rotation-ball.ball-14::before,.rotation-ball.ball-15::before { content:""; position:absolute; left:0; right:0; top:28%; height:44%; background:#fff; z-index:0; }
+.rotation-ball span { position:relative; z-index:1; display:flex; align-items:center; justify-content:center; width:34%; aspect-ratio:1; border-radius:50%; background:#fff; color:#111; font-size:.65em; text-shadow:none; }
+.rotation-note { margin-top:14px; text-align:center; opacity:.8; }
+.rotation-rules { background:#111820; border-radius:12px; padding:12px 16px; line-height:1.5; }
+.rotation-rules summary { cursor:pointer; font-weight:bold; }
+.rotation-rules ul { margin-bottom:4px; }
+@media(max-width:600px) {
+  .switcher { padding:10px 8px; flex-wrap:wrap; gap:8px; }
+  .switch-left { flex-wrap:wrap; gap:6px; }
+  .switcher button { padding:8px 10px; font-size:13px; }
+  .switch-actions { position:static; transform:none; margin-left:auto; gap:6px; }
+  .switch-actions button { min-width:0; }
+  #rotation { padding:8px; gap:8px; }
+  .rotation-scoreboard { min-height:180px; gap:8px; }
+  .rotation-player { padding:10px; }
+  .rotation-balls-panel { padding:10px; }
+  .rotation-balls { grid-template-columns:repeat(5,minmax(32px,1fr)); gap:8px; }
+  .rotation-heading { font-size:14px; margin-bottom:10px; }
+}
 </style>
 </head>
 <body>
 
-<div class="top-container">
-    <div class="left-panel">
+<div class="switcher">
+    <div class="switch-left">
+        <button id="btnBS" class="active" onclick="switchBoard('bs')">BS (Simple)</button>
+        <button id="btnBS14" onclick="switchBoard('bs14')">BS 14.1</button>
+        <button id="btnROTATION" onclick="switchBoard('rotation')">Rotation</button>
+    </div>
+
+    <div class="switch-actions" id="actions-bs">
+        <button onclick="resetScores('bs')">Reset</button>
+        <button onclick="undoLast()">Undo</button>
+        <button onclick="togglePlayer3('bs')">3</button>
+    </div>
+
+    <div class="switch-actions" id="actions-bs14" style="display:none">
+        <button onclick="undoBS14()">Undo</button>
+        <button onclick="resetGame()">Reset</button>
+        <button onclick="foul()">Foul</button>
+    </div>
+
+    <div class="switch-actions" id="actions-rotation" style="display:none">
+        <button onclick="undoRotation()">Undo</button>
+        <button onclick="resetRotation()">Reset</button>
+    </div>
+</div>
+
+<div id="fullscreenBtn" onclick="toggleFullscreen()">⛶</div>
+
+<div id="bsContainer">
+    <!-- BS Simple -->
+    <div id="bs" class="active">
         <div class="scoreboard">
-            <div class="player active" id="p1" onclick="switchPlayer(0)">
-                <div class="score p1" id="score1">0</div>
-                <div class="info" id="foul1">Fouls: 0</div>
-                <div class="info" id="run1">Run: 0</div>
-            </div>
+          <div class="player" data-p="1">
+            <div class="score p1" id="s1_1">0</div>
+          </div>
 
-            <div class="player" id="p2" onclick="switchPlayer(1)">
-                <div class="score p2" id="score2">0</div>
-                <div class="info" id="foul2">Fouls: 0</div>
-                <div class="info" id="run2">Run: 0</div>
-            </div>
+          <div class="player" data-p="2">
+            <div class="score p2" id="s2_1">0</div>
+          </div>
+
+          <div class="player" id="p3_1" data-p="3" style="display:none">
+            <div class="score p3" id="s3_1">0</div>
+          </div>
         </div>
+        <div id="rackHistory" class="rack-history"></div>
 
-        <div class="panel">
-            <div class="info" style="margin-bottom:10px">Balls left after shot</div>
-            <div class="grid" id="buttons"></div>
-        </div>
 
-        <div class="bottom">
-            <div class="info">Balls before shot: <strong id="ballsLeft">15</strong></div>
-            <button onclick="undo()">Undo</button>
-            <button onclick="resetGame()">Reset</button>
-            <button onclick="foul()">Foul</button>
+        <audio id="scoreSoundBS" src="b.mp3" preload="auto"></audio>
+    </div>
+
+    <!-- BS 14.1 -->
+    <div id="bs14">
+        <div class="top-container">
+            <div class="left-panel">
+                <div class="scoreboard">
+                    <div class="player active" id="p1" onclick="switchPlayer(0)">
+                        <div class="score p1" id="score1">0</div>
+                        <div class="info" id="foul1">Fouls: 0</div>
+                        <div class="info" id="run1">Run: 0</div>
+                    </div>
+                    <div class="player" id="p2" onclick="switchPlayer(1)">
+                        <div class="score p2" id="score2">0</div>
+                        <div class="info" id="foul2">Fouls: 0</div>
+                        <div class="info" id="run2">Run: 0</div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="info" style="margin-bottom:10px">Balls left after shot</div>
+                    <div class="grid" id="buttons"></div>
+                </div>
+                <div class="bottom">
+                    <div class="info">Balls before shot: <strong id="ballsLeft">15</strong></div>
+                </div>
+            </div>
+            <div class="right-panel">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>P1 Inning</th>
+                            <th>P1 Sum</th>
+                            <th>P2 Inning</th>
+                            <th>P2 Sum</th>
+                            <th>Balls Left</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inningsTable"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <div class="right-panel">
-        <table>
-            <thead>
-                <tr>
-                    <th>P1 Inning</th>
-                    <th>P1 Sum</th>
-                    <th>P2 Inning</th>
-                    <th>P2 Sum</th>
-                    <th>Balls Left</th>
-                </tr>
-            </thead>
-            <tbody id="inningsTable"></tbody>
-        </table>
+    <!-- WPA Rotation: separate board and state; existing boards above remain unchanged. -->
+    <div id="rotation">
+        <div class="rotation-scoreboard">
+            <div class="rotation-player active" id="rotationP1" onclick="selectRotationPlayer(0)">
+                <div class="rotation-score rotation-p1" id="rotationScore1">0</div>
+                <div class="rotation-player-label">Player 1 · first to 61</div>
+            </div>
+            <div class="rotation-player" id="rotationP2" onclick="selectRotationPlayer(1)">
+                <div class="rotation-score rotation-p2" id="rotationScore2">0</div>
+                <div class="rotation-player-label">Player 2 · first to 61</div>
+            </div>
+        </div>
+        <div class="rotation-balls-panel">
+            <div class="rotation-heading">
+                <strong>Balls on table</strong>
+                <span id="rotationBallsLeft">15 balls · 120 points available</span>
+            </div>
+            <div class="rotation-balls" id="rotationBalls"></div>
+            <div class="rotation-note" id="rotationStatus">Select the ball that was legally pocketed. Its number is added to the active player's score.</div>
+        </div>
     </div>
 </div>
 
 <script>
-let state = {
-    scores: [0,0],
-    ballsOnTable: 15,
-    current: 0,
-    fouls: [0,0],
-    history: [],
-    run: 0,
-    currentInning: [[],[]],
-    completedInnings: []
-};
+/* ------------------ BS SIMPLE PRE-RENDERED ------------------ */
+/* ------------------ BS SIMPLE ------------------ */
+const MAX_RACKS = 30;
+let rackHistory = [];
+let actionHistory = []; // stores {player:1, points:1} for undo
+initRackHistory();
 
-function snapshot() {
-    const snapshot = {
-        scores: [...state.scores],
-        ballsOnTable: state.ballsOnTable,
-        current: state.current,
-        fouls: [...state.fouls],
-        run: state.run,
-        currentInning: [ [...state.currentInning[0]], [...state.currentInning[1]] ]
-    };
-    state.history.push(snapshot);
-    if(state.history.length > 50) state.history.shift();
+function initRackHistory() {
+  const container = document.getElementById('rackHistory');
+  container.innerHTML = '';
+  for(let p=1;p<=3;p++){
+    const row = document.createElement('div');
+    row.className = 'rack-row';
+    row.id = `rack-row-${p}`;
+    row.style.display = (p===3?'none':'flex');
+    for(let i=0;i<MAX_RACKS;i++){
+      const c = document.createElement('div');
+      c.className = 'rack-circle';
+      row.appendChild(c);
+    }
+    container.appendChild(row);
+  }
+  renderRackHistory();
 }
 
-function undo() {
+function renderRackHistory(){
+  for(let p=1;p<=3;p++){
+    const row = document.getElementById(`rack-row-${p}`);
+    if(!row) continue;
+    row.style.display = (p===3 && document.getElementById('p3_1').style.display==='none')?'none':'flex';
+    const circles = row.children;
+    for(let i=0;i<MAX_RACKS;i++){
+      circles[i].className = 'rack-circle';
+      if(rackHistory[i]===p){
+        circles[i].classList.add(`p${p}-won`);
+      }
+    }
+  }
+}
+
+document.querySelectorAll('#bs .player').forEach(p => {
+    p.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const player = parseInt(p.dataset.p);
+        addScore(player, 'bs');
+    }, { passive: false });
+});
+
+
+function addScore(player){
+  const el = document.getElementById(`s${player}_1`);
+  el.textContent = parseInt(el.textContent)+1;
+  rackHistory.push(player);
+  actionHistory.push({player:player});
+  renderRackHistory();
+  playScoreSound();
+}
+
+function undoLast(){
+  if(actionHistory.length===0) return;
+  const last = actionHistory.pop();
+  const player = last.player;
+  const el = document.getElementById(`s${player}_1`);
+  const v = parseInt(el.textContent);
+  if(v>0) el.textContent = v-1;
+  // remove last rack entry
+  for(let i=rackHistory.length-1;i>=0;i--){
+    if(rackHistory[i]===player){
+      rackHistory.splice(i,1);
+      break;
+    }
+  }
+  renderRackHistory();
+}
+
+function togglePlayer3(){
+  const row = document.getElementById('rack-row-3');
+  const p3Panel = document.getElementById('p3_1');
+  const show = row.style.display==='none';
+  row.style.display = show?'flex':'none';
+  if(p3Panel) p3Panel.style.display = show?'flex':'none';
+}
+
+function resetScores(){
+  [1,2,3].forEach(p=>{
+    const el = document.getElementById(`s${p}_1`);
+    if(el) el.textContent='0';
+  });
+  rackHistory = [];
+  actionHistory = [];
+  renderRackHistory();
+}
+
+function playScoreSound(){
+  const sound = document.getElementById('scoreSoundBS');
+  if(sound){ sound.currentTime=0; sound.play(); }
+}
+
+// ------------------ INIT ------------------
+initRackHistory();
+
+// ------------------ BOARD SWITCHING ------------------
+function switchBoard(boardId){
+    document.querySelectorAll('#bsContainer > div').forEach(d=>d.classList.remove('active'));
+    document.getElementById(boardId).classList.add('active');
+    document.querySelectorAll('.switcher .switch-left button').forEach(b=>b.classList.remove('active'));
+    const buttonIds = {bs:'btnBS', bs14:'btnBS14', rotation:'btnROTATION'};
+    document.getElementById(buttonIds[boardId]).classList.add('active');
+    document.getElementById('actions-bs').style.display = boardId==='bs'?'flex':'none';
+    document.getElementById('actions-bs14').style.display = boardId==='bs14'?'flex':'none';
+    document.getElementById('actions-rotation').style.display = boardId==='rotation'?'flex':'none';
+}
+
+// ------------------ BS 14.1 LOGIC ------------------
+let state = {scores:[0,0], ballsOnTable:15, current:0, fouls:[0,0], history:[], run:0, currentInning:[[],[]], completedInnings:[]};
+
+function snapshot(){
+    const snap = {
+        scores:[...state.scores],
+        ballsOnTable:state.ballsOnTable,
+        current:state.current,
+        fouls:[...state.fouls],
+        run:state.run,
+        currentInning:[[...state.currentInning[0]],[...state.currentInning[1]]]
+    };
+    state.history.push(snap);
+    if(state.history.length>50) state.history.shift();
+}
+
+function undoBS14(){
     if(!state.history.length) return;
     const prev = state.history.pop();
     state.scores = prev.scores;
@@ -193,30 +530,28 @@ function undo() {
     render();
 }
 
-function render() {
-    score1.textContent = state.scores[0];
-    score2.textContent = state.scores[1];
-    ballsLeft.textContent = state.ballsOnTable;
-    document.getElementById('foul1').textContent = 'Fouls: ' + state.fouls[0];
-    document.getElementById('foul2').textContent = 'Fouls: ' + state.fouls[1];
-    document.getElementById('run1').textContent = 'Run: ' + (state.current===0?state.run:0);
-    document.getElementById('run2').textContent = 'Run: ' + (state.current===1?state.run:0);
-
-    p1.classList.toggle("active", state.current===0);
-    p2.classList.toggle("active", state.current===1);
-
+function render(){
+    document.getElementById('score1').textContent=state.scores[0];
+    document.getElementById('score2').textContent=state.scores[1];
+    document.getElementById('ballsLeft').textContent=state.ballsOnTable;
+    document.getElementById('foul1').textContent='Fouls: '+state.fouls[0];
+    document.getElementById('foul2').textContent='Fouls: '+state.fouls[1];
+    document.getElementById('run1').textContent='Run: '+(state.current===0?state.run:0);
+    document.getElementById('run2').textContent='Run: '+(state.current===1?state.run:0);
+    document.getElementById('p1').classList.toggle("active",state.current===0);
+    document.getElementById('p2').classList.toggle("active",state.current===1);
     renderButtons();
     renderInningsTable();
 }
 
-function renderButtons() {
+function renderButtons(){
     const container = document.getElementById("buttons");
-    container.innerHTML = "";
+    container.innerHTML='';
     const max = Math.min(15,state.ballsOnTable);
     for(let i=1;i<=max;i++){
         const b = document.createElement("button");
         b.textContent = i;
-        b.onclick = ()=>handleSelection(i);
+        b.onclick = () => handleSelection(i);
         container.appendChild(b);
     }
 }
@@ -225,39 +560,20 @@ function handleSelection(selected){
     snapshot();
     const p = state.current;
     state.fouls[p]=0;
-    let points=0;
-
+    let points = 0;
     if(selected===1){
-        points = state.ballsOnTable-1;
-        state.run+=points;
-        state.ballsOnTable=15;
-        flashRack(p);
-        state.currentInning[p].push(points);
-        state.scores[p]+=points;
-        render();
-        return;
+        points = state.ballsOnTable-1; state.run+=points; state.ballsOnTable=15;
+        flashRack(p); state.currentInning[p].push(points); state.scores[p]+=points; render(); return;
     }
-
-    points = state.ballsOnTable - selected;
-    state.ballsOnTable = selected;
-    state.run = 0;
-
-    state.currentInning[p].push(points);
-    state.scores[p]+=points;
-
-    // finalize inning if points scored
+    points = state.ballsOnTable-selected; state.ballsOnTable=selected; state.run=0;
+    state.currentInning[p].push(points); state.scores[p]+=points;
     if(points>0) finalizeInning();
-
-    // switch player
     state.current = 1-p;
-
     render();
 }
 
 function finalizeInning(){
-    const hasPoints = state.currentInning[0].length>0 || state.currentInning[1].length>0;
-    if(!hasPoints) return;
-
+    if(state.currentInning[0].length===0 && state.currentInning[1].length===0) return;
     const row = [
         state.currentInning[0].slice(), sumArray(state.currentInning[0]),
         state.currentInning[1].slice(), sumArray(state.currentInning[1]),
@@ -268,17 +584,16 @@ function finalizeInning(){
 }
 
 function flashRack(player){
-    const el = player===0?p1:p2;
+    const el = player===0?document.getElementById('p1'):document.getElementById('p2');
     el.style.boxShadow='0 0 40px 10px gold';
     setTimeout(()=>{el.style.boxShadow='';},800);
 }
 
 function switchPlayer(p){
     snapshot();
-    // only finalize inning if points exist
     finalizeInning();
-    state.current=p;
-    state.run=0;
+    state.current = p;
+    state.run = 0;
     render();
 }
 
@@ -286,57 +601,127 @@ function foul(){
     snapshot();
     const p = state.current;
     state.fouls[p]++;
-    state.run=0;
-    let points=-1;
-
-    if(state.fouls[p]===3){
-        points=-15;
-        state.fouls[p]=0;
-        state.ballsOnTable=15;
-    } else if(state.ballsOnTable===1){
-        state.ballsOnTable=15;
-    }
-
+    state.run = 0;
+    let points = -1;
+    if(state.fouls[p]===3){ points=-15; state.fouls[p]=0; state.ballsOnTable=15; }
+    else if(state.ballsOnTable===1) state.ballsOnTable=15;
     state.scores[p]+=points;
     state.currentInning[p].push(points);
-    state.current=1-p;
+    state.current = 1-p;
     finalizeInning();
     render();
 }
 
-function sumArray(arr){return arr.reduce((a,b)=>a+b,0);}
+function sumArray(arr){ return arr.reduce((a,b)=>a+b,0); }
 
 function renderInningsTable(){
     const tbody=document.getElementById('inningsTable');
     tbody.innerHTML='';
     state.completedInnings.forEach(r=>{
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${r[0].join('/')}</td>
-                        <td>${r[1]}</td>
-                        <td>${r[2].join('/')}</td>
-                        <td>${r[3]}</td>
-                        <td>${r[4]}</td>`;
+        const tr = document.createElement('tr');
+        tr.innerHTML=`<td>${r[0].join('/')}</td><td>${r[1]}</td><td>${r[2].join('/')}</td><td>${r[3]}</td><td>${r[4]}</td>`;
         tbody.appendChild(tr);
     });
 }
 
+// ------------------ MISC ------------------
+function toggleFullscreen(){
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+}
 
 function resetGame(){
     if(!confirm("Reset game?")) return;
-    state={
-        scores:[0,0],
-        ballsOnTable:15,
-        current:0,
-        fouls:[0,0],
-        history:[],
-        run:0,
-        currentInning:[[],[]],
-        completedInnings:[]
-    };
+    state = {scores:[0,0], ballsOnTable:15, current:0, fouls:[0,0], history:[], run:0, currentInning:[[],[]], completedInnings:[]};
     render();
 }
 
 render();
+
+/* ------------------ WPA ROTATION LOGIC ------------------ */
+let rotationState = {
+    scores:[0,0],
+    current:0,
+    remaining:Array.from({length:15},(_,i)=>i+1),
+    history:[],
+    winner:null
+};
+
+function snapshotRotation(){
+    rotationState.history.push({
+        scores:[...rotationState.scores],
+        current:rotationState.current,
+        remaining:[...rotationState.remaining],
+        winner:rotationState.winner
+    });
+    if(rotationState.history.length>100) rotationState.history.shift();
+}
+
+function selectRotationPlayer(player){
+    if(rotationState.winner!==null) return;
+    snapshotRotation();
+    rotationState.current=player;
+    renderRotation();
+}
+
+function pocketRotationBall(number){
+    if(rotationState.winner!==null || !rotationState.remaining.includes(number)) return;
+    snapshotRotation();
+    rotationState.remaining=rotationState.remaining.filter(n=>n!==number);
+    rotationState.scores[rotationState.current]+=number;
+    if(rotationState.scores[rotationState.current]>=61){
+        rotationState.winner=rotationState.current;
+    }
+    renderRotation();
+}
+
+function undoRotation(){
+    if(!rotationState.history.length) return;
+    const previous=rotationState.history.pop();
+    rotationState.scores=previous.scores;
+    rotationState.current=previous.current;
+    rotationState.remaining=previous.remaining;
+    rotationState.winner=previous.winner;
+    renderRotation();
+}
+
+function resetRotation(){
+    if(!confirm('Reset Rotation game?')) return;
+    rotationState={scores:[0,0],current:0,remaining:Array.from({length:15},(_,i)=>i+1),history:[],winner:null};
+    renderRotation();
+}
+
+function renderRotation(){
+    document.getElementById('rotationScore1').textContent=rotationState.scores[0];
+    document.getElementById('rotationScore2').textContent=rotationState.scores[1];
+    document.getElementById('rotationP1').classList.toggle('active',rotationState.current===0);
+    document.getElementById('rotationP2').classList.toggle('active',rotationState.current===1);
+    const remaining=document.getElementById('rotationBallsLeft');
+    remaining.textContent=rotationState.remaining.length+' balls · '+rotationState.remaining.reduce((sum,n)=>sum+n,0)+' points available';
+    const container=document.getElementById('rotationBalls');
+    container.innerHTML='';
+    for(let n=1;n<=15;n++){
+        const button=document.createElement('button');
+        button.type='button';
+        button.className='rotation-ball ball-'+n;
+        button.setAttribute('aria-label','Pocket ball '+n+', worth '+n+' points');
+        button.disabled=!rotationState.remaining.includes(n) || rotationState.winner!==null;
+        const number=document.createElement('span');
+        number.textContent=n;
+        button.appendChild(number);
+        button.onclick=()=>pocketRotationBall(n);
+        container.appendChild(button);
+    }
+    const status=document.getElementById('rotationStatus');
+    if(rotationState.winner!==null){
+        status.textContent='Player '+(rotationState.winner+1)+' wins with '+rotationState.scores[rotationState.winner]+' points!';
+    } else {
+        status.textContent='Player '+(rotationState.current+1)+' to shoot · click a legally pocketed ball. Tap a player score to switch turns.';
+    }
+}
+renderRotation();
 </script>
+
+
 </body>
 </html>
