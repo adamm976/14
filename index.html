@@ -1,4 +1,3 @@
-```
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -757,9 +756,10 @@ renderRotation();
 /* ------------------ COLOR DRAW ------------------ */
 let drawColors=[];
 let drawRevealed=[];
+
 function resetDraw(){
-    drawColors=['yellow','blue','red','purple'];
-    // Fisher-Yates shuffle with browser crypto for unbiased random indices.
+    drawColors=['yellow','blue','red'];
+
     for(let i=drawColors.length-1;i>0;i--){
         const limit=Math.floor(4294967296/(i+1))*(i+1);
         const buffer=new Uint32Array(1);
@@ -768,7 +768,8 @@ function resetDraw(){
         const j=value%(i+1);
         [drawColors[i],drawColors[j]]=[drawColors[j],drawColors[i]];
     }
-    drawRevealed=[false,false,false,false];
+
+    drawRevealed=drawColors.map(()=>false);
     renderDraw();
 }
 function renderDraw(){
@@ -818,4 +819,3 @@ document.addEventListener('keydown',e=>{
 
 </body>
 </html>
-```
